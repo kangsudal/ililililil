@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -34,18 +35,36 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: TextField(),
+        title: TextField(controller: controller,),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              final name = controller.text;
+              createUser(name: name);
+            },
             icon: Icon(Icons.add),
           ),
         ],
       ),
     );
+  }
+
+  Future createUser({required String name}) async{
+    //Reference to document
+    final docUser = FirebaseFirestore.instance.collection('users').doc('my-id');
+
+    final json = {
+      'name':name,
+      'age':28,
+      'birthday': DateTime(1994,1,24),
+    };
+
+    //Create document and write data to Firebase
+    await docUser.set(json);
   }
 }
