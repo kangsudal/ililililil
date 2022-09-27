@@ -47,13 +47,23 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text('Add User'),
       ),
       floatingActionButton: FloatingActionButton(onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => AddUserPage(),
-          ),
-        );
+        _navigateToAddUserPage(context);
       }),
+    );
+  }
+
+  _navigateToAddUserPage(BuildContext context) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddUserPage(),
+      ),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Added $result to Firebase!'),
+        duration: Duration(seconds: 1),
+      ),
     );
   }
 }
@@ -123,7 +133,7 @@ class AddUserPage extends StatelessWidget {
                 birthday: DateTime.parse(controllerDate.text),
               );
               createUser(user);
-              Navigator.pop(context);
+              Navigator.pop(context, user.name);
             },
             child: Text('Create'),
           ),
