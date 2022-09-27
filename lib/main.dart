@@ -46,6 +46,51 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text('Add User'),
       ),
+      floatingActionButton: FloatingActionButton(onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AddUserPage(),
+          ),
+        );
+      }),
+    );
+  }
+}
+
+class User {
+  String id;
+  final String name;
+  final int age;
+  final DateTime birthday;
+
+  User({
+    this.id = '',
+    required this.name,
+    required this.age,
+    required this.birthday,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'age': age,
+        'birthday': birthday,
+      };
+}
+
+class AddUserPage extends StatelessWidget {
+  AddUserPage({Key? key}) : super(key: key);
+
+  final controllerName = TextEditingController();
+  final controllerAge = TextEditingController();
+  final controllerDate = TextEditingController();
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Add User'),
+      ),
       body: ListView(
         padding: EdgeInsets.all(16),
         children: [
@@ -78,6 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 birthday: DateTime.parse(controllerDate.text),
               );
               createUser(user);
+              Navigator.pop(context);
             },
             child: Text('Create'),
           ),
@@ -104,25 +150,4 @@ class _MyHomePageState extends State<MyHomePage> {
     //Create document and write data to Firebase
     await docUser.set(json);
   }
-}
-
-class User {
-  String id;
-  final String name;
-  final int age;
-  final DateTime birthday;
-
-  User({
-    this.id = '',
-    required this.name,
-    required this.age,
-    required this.birthday,
-  });
-
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'age': age,
-        'birthday': birthday,
-      };
 }
