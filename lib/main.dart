@@ -7,10 +7,11 @@ import 'package:practice_firebase_crud/model/user.dart';
 import 'firebase_options.dart';
 
 void main() async {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -49,6 +50,27 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(onPressed: () {
         _navigateToAddUserPage(context);
       }),
+      body: StreamBuilder<List<User>>(
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Text('Something went wrong! ${snapshot.error}');
+          } else if (snapshot.hasData) {
+            final users = snapshot.data!;
+            return ListView(
+              children: users
+                  .map(
+                    (user) => buildUser(user),
+                  )
+                  .toList(),
+            );
+          } else {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
+        stream: readUsers(),
+      ),
     );
   }
 
@@ -67,14 +89,18 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Stream<List<User>?> readUsers() {
-    CollectionReference collectionReference = FirebaseFirestore.instance.collection('users');
-    return collectionReference.snapshots().map((snapshot) {
-      snapshot.docs.map((doc) => User.fromJson(doc.data() as Map<String,dynamic>)).toList();
-    });
-  }
+  Stream<List<User>> readUsers() {
 
+    return FirebaseFirestore.instance.collection('users').snapshots().map(
+        (snapshot) =>
+            snapshot.docs.map((doc) => User.fromJson(doc.data())).toList());
+  }
 }
 
-
-
+Widget buildUser(User user) => ListTile(
+      leading: CircleAvatar(
+        child: Text('${user.age}'),
+      ),
+      title: Text(user.name),
+      subtitle: Text(user.birthday.toIso8601String()),
+    );
