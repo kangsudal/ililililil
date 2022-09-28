@@ -50,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(onPressed: () {
         _navigateToAddUserPage(context);
       }),
-      body: StreamBuilder<List<User>>(
+      body: FutureBuilder<List<User>>(
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Text('Something went wrong! ${snapshot.error}');
@@ -69,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
             );
           }
         },
-        stream: readUsers(),
+        future: readUsers().first,
       ),
     );
   }
